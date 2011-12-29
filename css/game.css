@@ -18,6 +18,38 @@ body {
 	box-shadow    : 0px 0px 2px #000;
 	background    : #FFE;
 	float         : left;
+	display:none;
+}
+
+.ball {
+	position      : absolute;
+	background    : #0FF -webkit-gradient(
+		  radial, 25% 25%, 10, 50% 50%, 100
+		, from(            rgba( 245, 245, 245, 0.3 ) )
+		, color-stop( 0.5, rgba( 26 , 26 , 26 , 0.9 ) )
+		, to(              rgba( 0  , 0  , 0  , 0.8 ) )
+	);
+	width         : 100px;
+	height        : 100px;
+	border-radius : 50px;
+}
+.ball .shadow {
+	position              : absolute;
+	bottom                : 22%;
+	left                  : 0;
+	right                 : 0;
+	height                : 10%;
+	-webkit-border-radius : 100px;
+	box-shadow            : 0 25px 15px rgba( 0, 0, 0, .2 )
+}
+.ball .shadow2 {
+	position              : absolute;
+	bottom                : 22%;
+	left                  : 25%;
+	right                 : 25%;
+	height                : 5%;
+	-webkit-border-radius : 100px;
+	box-shadow            : 0 25px 15px rgba( 0, 0, 0, .6 );
 }
 
 .two-by-two     .screen { width  : 48%;    height : 48%;    }
