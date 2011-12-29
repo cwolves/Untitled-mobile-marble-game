@@ -1,0 +1,31 @@
+html, body, #game {
+	width    : 100%;
+	height   : 100%;
+	margin   : 0px;
+	padding  : 0px;
+	overflow : hidden;
+}
+
+body {
+	background : #EEE;
+}
+
+.screen {
+	border-radius : 5px;
+	position      : relative;
+	border        : 1px solid #CCC;
+	margin        : 0.5%;
+	box-shadow    : 0px 0px 2px #000;
+	background    : #FFE;
+	float         : left;
+}
+
+.two-by-two     .screen { width  : 48%;    height : 48%;    }
+.two-by-three   .screen { width  : 48%;    height : 31.33%; }
+.three-by-two   .screen { width  : 31.33%; height : 48%;    }
+.three-by-three .screen { width  : 31.33%; height : 31.33%; }
+
+.two-by-two     .game { width : 200%; height : 200%; }
+.two-by-three   .game { width : 200%; height : 300%; }
+.three-by-two   .game { width : 300%; height : 200%; }
+.three-by-three .game { width : 300%; height : 300%; }
