@@ -1,3 +1,4 @@
+"use strict";
 // TODO: reqEvents deferring doesn't work ATM if the reqEvent is triggered first :/
 
 (function( $ ){

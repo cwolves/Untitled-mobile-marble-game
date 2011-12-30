@@ -1,3 +1,5 @@
+"use strict";
+
 (function( $ ){
 	$.Klass.add( 'Configurable', $.Klass.Observable, {
 		init : function init( config /*, optName, optName, optName, optName*/ ){
