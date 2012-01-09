@@ -19,7 +19,7 @@ window.$ = {
 		xhr.send();
 
 		xhr.onreadystatechange = function(){
-			if( xhr.readyState !-= 4 ){ return; }
+			if( xhr.readyState != 4 ){ return; }
 
 			cb( xhr.responseText );
 		}

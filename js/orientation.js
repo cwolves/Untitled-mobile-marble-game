@@ -1,6 +1,4 @@
 ( function( $ ){
-	var logged = false;
-
 	// interface to the compass that gets normalized
 	$.Klass.add( 'HTML5.Orientation', $.Klass.Observable, {
 		init : function( config ){

@@ -1,53 +1,59 @@
 ( function( $ ){
-	var hasTouch = false
-	  , touchEv, lastEv, movedFar;
+	// interface to the compass that gets normalized
+	$.Klass.add( 'HTML5.Touch', $.Klass.Observable, {
+		init : function init( node ){
+			node || ( node = window );
 
-	window.addEventListener( 'click'     , onClick     , true );
-	window.addEventListener( 'touchstart', onTouchStart, true );
-	window.addEventListener( 'touchmove' , onTouchMove , true );
-	window.addEventListener( 'touchend'  , onTouchEnd  , true );
+			node.addEventListener( 'mousedown' , this.bindMethod( 'onTouchStart' ), true );
+			node.addEventListener( 'mousemove' , this.bindMethod( 'onTouchMove'  ), true );
+			node.addEventListener( 'mouseup'   , this.bindMethod( 'onTouchEnd'   ), true );
 
-	function onClick( ev ) {
-		GAME.trigger( 'click', { x: ev.pageX, y: ev.pageY, dX: ev.pageX - lastEv.pageX, dY: ev.pageY - lastEv.pageY } );
-	}
-
-	function unbindClickHandler() {
-		window.removeEventListener( 'click', onClick, true );
-		hasTouch = true;
-
-		ev.preventDefault();
-		return false;
-	}
-
-	function onTouchStart( ev ) {
-		if( !hasTouch ){ unbindClickHandler(); }
-
-		touchEv = lastEv = ev;
-		movedFar = false;
-
-		ev.preventDefault();
-		return false;
-	}
-
-	function onTouchMove( ev ) {
-		GAME.trigger( 'mouseMove', { x: ev.pageX, y: ev.pageY, dX: ev.pageX - lastEv.pageX, dY: ev.pageY - lastEv.pageY }, ev )
-
-		// once mouse has moved >= 5px from start, don't trigger 'click' events from touch
-		if( !movedFar && ( ( Math.abs( ev.pageX - lastEv.pageX ) > 5 ) || ( Math.abs( ev.pageY - lastEv.pageY ) > 5 ) ) ){
-			movedFar = true;
+			node.addEventListener( 'touchstart', this.bindMethod( 'onTouchStart' ), true );
+			node.addEventListener( 'touchmove' , this.bindMethod( 'onTouchMove'  ), true );
+			node.addEventListener( 'touchend'  , this.bindMethod( 'onTouchEnd'   ), true );
 		}
-		lastEv = ev;
-	}
 
-	function onTouchEnd( ev ) {
-		var evObj = { x: ev.pageX, y: ev.pageY, dX: ev.pageX - lastEv.pageX, dY: ev.pageY - lastEv.pageY };
-
-		if( !movedFar ){
-			GAME.trigger( 'click', evObj );
+		, normalizeEv: function normalizeEv( ev ){
+			if( ev.touches && ev.touches.length ){
+				ev.pageX = ev.touches[0].pageX;
+				ev.pageY = ev.touches[0].pageY;
+			};
 		}
-		GAME.trigger( 'mouseUp', evObj );
 
-		ev.preventDefault();
-		return false;
+		, onTouchStart: function onTouchStart( ev ){
+			ev = this.normalizeEv( ev );
+
+			this.touchEv  = this.lastEv = ev;
+			this.movedFar = false;
+
+			ev.preventDefault();
+			return false;
+		}
+
+		, onTouchMove: function onTouchMove( ev ){
+			ev = this.normalizeEv( ev );
+
+			this.trigger( 'mouseMove', { x: ev.pageX, y: ev.pageY, dX: ev.pageX - this.lastEv.pageX, dY: ev.pageY - this.lastEv.pageY }, ev )
+
+			// once mouse has moved >= 5px from start, don't trigger 'click' events from touch
+			if( !this.movedFar && ( ( Math.abs( ev.pageX - this.lastEv.pageX ) > 5 ) || ( Math.abs( ev.pageY - this.lastEv.pageY ) > 5 ) ) ){
+				this.movedFar = true;
+			}
+			this.lastEv = ev;
+		}
+
+		, onTouchEnd: function onTouchEnd( ev ){
+			ev = this.normalizeEv( ev );
+
+			var evObj = { x: ev.pageX, y: ev.pageY, dX: ev.pageX - this.lastEv.pageX, dY: ev.pageY - this.lastEv.pageY };
+
+			if( !this.movedFar ){
+				this.trigger( 'click', evObj );
+			}
+			this.trigger( 'mouseUp', evObj );
+
+			ev.preventDefault();
+			return false;
+		}
 	}
 }( $ ) );

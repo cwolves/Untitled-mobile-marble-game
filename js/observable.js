@@ -175,4 +175,4 @@
 			return this.trigger.apply(this, arguments);
 		}
 	});
-}( jQuery ));
+}( $ ));
