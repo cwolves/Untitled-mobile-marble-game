@@ -1,7 +1,11 @@
+"use strict";
+
 ( function( $ ){
 	// interface to the compass that gets normalized
 	$.Klass.add( 'HTML5.Touch', $.Klass.Observable, {
 		init : function init( node ){
+			this._super();
+
 			node || ( node = window );
 
 			node.addEventListener( 'mousedown' , this.bindMethod( 'onTouchStart' ), true );
@@ -18,6 +22,8 @@
 				ev.pageX = ev.touches[0].pageX;
 				ev.pageY = ev.touches[0].pageY;
 			};
+
+			return ev;
 		}
 
 		, onTouchStart: function onTouchStart( ev ){
@@ -31,9 +37,11 @@
 		}
 
 		, onTouchMove: function onTouchMove( ev ){
+			if( !this.touchEv ){ return; }
+
 			ev = this.normalizeEv( ev );
 
-			this.trigger( 'mouseMove', { x: ev.pageX, y: ev.pageY, dX: ev.pageX - this.lastEv.pageX, dY: ev.pageY - this.lastEv.pageY }, ev )
+			this.trigger( 'mouseMove', { x: ev.pageX, y: ev.pageY, dX: ev.pageX - this.lastEv.pageX, dY: ev.pageY - this.lastEv.pageY, target : ev.target } );
 
 			// once mouse has moved >= 5px from start, don't trigger 'click' events from touch
 			if( !this.movedFar && ( ( Math.abs( ev.pageX - this.lastEv.pageX ) > 5 ) || ( Math.abs( ev.pageY - this.lastEv.pageY ) > 5 ) ) ){
@@ -45,7 +53,7 @@
 		, onTouchEnd: function onTouchEnd( ev ){
 			ev = this.normalizeEv( ev );
 
-			var evObj = { x: ev.pageX, y: ev.pageY, dX: ev.pageX - this.lastEv.pageX, dY: ev.pageY - this.lastEv.pageY };
+			var evObj = { x: ev.pageX, y: ev.pageY, dX: ev.pageX - this.lastEv.pageX, dY: ev.pageY - this.lastEv.pageY, target : ev.target };
 
 			if( !this.movedFar ){
 				this.trigger( 'click', evObj );
@@ -53,7 +61,8 @@
 			this.trigger( 'mouseUp', evObj );
 
 			ev.preventDefault();
+			delete this.touchEv;
 			return false;
 		}
-	}
+	} );
 }( $ ) );

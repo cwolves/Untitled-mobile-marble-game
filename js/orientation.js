@@ -1,23 +1,24 @@
+"use strict";
+
 ( function( $ ){
 	// interface to the compass that gets normalized
 	$.Klass.add( 'HTML5.Orientation', $.Klass.Observable, {
 		init : function( config ){
 			this._super();
 
-			window.addEventListner( 'deviceorientation', this.bindMethod( 'orientationChange' ), true );
+			window.addEventListener( 'deviceorientation', this.bindMethod( 'orientationChange' ), true );
 			this.degrees = 0;
-			this.config  = config;
+			this.config  = config || {};
 		}
 
-		, orientationChange : function( ev ){
+		, orientationChange : function( oEv ){
 			/**
 			 * beta  = angle that top of device is pointing
 			 * gamma = angle that side of device is pointing
 			 * 
 			 * In portrait only: if gamma closer to 0, pointing back.  If closer to +- 180, pointing forward
 			 **/
-			var     oEv = ev.originalEvent
-			  , heading = oEv.webkitCompassHeading - ( this.config.zeroDeg || 0 )
+			var heading = oEv.webkitCompassHeading - ( this.config.zeroDeg || 0 )
 			  ,    beta = oEv.beta
 			  ,   gamma = oEv.gamma
 			  ,  orient = window.orientation
@@ -51,7 +52,10 @@
 			if( !this.heading ){ this.heading = heading; }
 
 			this.trigger( 'heading', this.heading = this.heading + heading - this.lastHeading );
-			this.trigger( 'angle', this.angle = angle );
+			this.trigger( 'angle'  , this.angle = angle );
+			this.trigger( 'beta'   , beta );
+			this.trigger( 'gamma'  , gamma );
+			this.trigger( 'beta+gamma', beta, gamma );
 
 			this.lastHeading = heading;
 		}

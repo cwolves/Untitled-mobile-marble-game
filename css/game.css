@@ -10,6 +10,20 @@ body {
 	background : #EEE;
 }
 
+#game-wrapper {
+	width                   : 100%;
+	height                  : 100%;
+	-webkit-transform-style : preserve-3d;
+	-webkit-perspective     : 400;
+}
+
+#game {
+	-webkit-transition      : -webkit-transform .5s linear;
+	-webkit-perspective     : 500;
+	-webkit-transform-style : preserve-3d;
+	overflow                : visible;
+}
+
 .screen {
 	border-radius : 15px;
 	position      : relative;
@@ -57,8 +71,23 @@ body {
 	width         : 50px;
 	height        : 50px;
 	box-shadow    : 0 0 15px #000;
+	position      : absolute;
 }
 
+.wall {
+	position                    : absolute;
+	height                      : 50px;
+	background-color            : #E5E4E1;
+	border                      : 1px solid #B3B1AF;
+	-webkit-transform-origin    : 0% 0%;
+}
+
+.wall.dark {
+	background-color : #D9D7D4;
+}
+
+.two-by-one     .screen { width  : 48%;    height : 98%;    }
+.three-by-one   .screen { width  : 31.33%; height : 98%;    }
 .two-by-two     .screen { width  : 48%;    height : 48%;    }
 .two-by-three   .screen { width  : 48%;    height : 31.33%; }
 .three-by-two   .screen { width  : 31.33%; height : 48%;    }
