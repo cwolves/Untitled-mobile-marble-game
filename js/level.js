@@ -69,8 +69,12 @@
 
 			screen.className = 'screen';
 
-			this.createSides( lines, screen );
 			this.domNode.appendChild( screen );
+
+			this.screenW = screen.offsetWidth;
+			this.screenH = screen.offsetHeight;
+			
+			this.createSides( lines, screen );
 
 			return this;
 		}
@@ -103,12 +107,12 @@
 		NE-SW right
 		*/
 		, createSides : function createSides( lines, screen ){
-			var  sides = []
+			var  sides = {}
 			  ,    dir = 0
 			  ,   side = 0
 			  , height = this.height = lines.length
 			  ,  width =  this.width = lines[0].length
-			  , x, y, l, m, chr, sX, sY, edge, xDir, yDir, nChr;
+			  , x, y, l, m, chr, sX, sY, edge, xDir, yDir, nChr, ary;
 
 			for( y=0, l=lines.length; y<l; y++ ){
 				for( x=0, m=lines[y].length; x<m; x++ ){
@@ -133,22 +137,26 @@
 						case '=': case '|': case '-':
 							// check top
 							if( !$.get2dAryElement( lines, y-1, x ) ){
-								sides.push( [ x+1, y, x, y ] );
+								ary = [ x+1, y, x, y ];
+								sides[ ary.join( '-' ) ] = ary;
 							}
 
 							// check right
 							if( !$.get2dAryElement( lines, y, x+1 ) ){
-								sides.push( [ x+1, y+1, x+1, y ] );
+								ary = [ x+1, y+1, x+1, y ];
+								sides[ ary.join( '-' ) ] = ary;
 							}
 
 							// check bottom
 							if( !$.get2dAryElement( lines, y+1, x ) ){
-								sides.push( [ x, y+1, x+1, y+1 ] );
+								ary = [ x, y+1, x+1, y+1 ];
+								sides[ ary.join( '-' ) ] = ary;
 							}
 
 							// check left
 							if( !$.get2dAryElement( lines, y, x-1 ) ){
-								sides.push( [ x, y, x, y+1 ] );
+								ary = [ x, y, x, y+1 ];
+								sides[ ary.join( '-' ) ] = ary;
 							}
 
 							break;
@@ -156,40 +164,48 @@
 						case '/':
 							// check right
 							if( !$.get2dAryElement( lines, y, x+1 ) ){
-								sides.push( [ x, y+1, x+1, y ] );
+								ary = [ x, y+1, x+1, y ];
+								sides[ ary.join( '-' ) ] = ary;
 
 							// check bottom
 							}else if( !$.get2dAryElement( lines, y+1, x ) ){
-								sides.push( [ x, y+1, x+1, y+1 ] );
+								ary = [ x, y+1, x+1, y+1 ];
+								sides[ ary.join( '-' ) ] = ary;
 							}
 
 							// check left
 							if( !$.get2dAryElement( lines, y, x-1 ) ){
-								sides.push( [ x+1, y, x, y+1 ] );
+								ary = [ x+1, y, x, y+1 ];
+								sides[ ary.join( '-' ) ] = ary;
 
 							// check top
 							}else if( !$.get2dAryElement( lines, y-1, x ) ){
-								sides.push( [ x+1, y, x, y ] );
+								ary = [ x+1, y, x, y ];
+								sides[ ary.join( '-' ) ] = ary;
 							}
 							break;
 
 						case '\\':
 							// check right
 							if( !$.get2dAryElement( lines, y, x+1 ) ){
-								sides.push( [ x+1, y+1, x, y ] );
+								ary = [ x+1, y+1, x, y ];
+								sides[ ary.join( '-' ) ] = ary;
 
 							// check top
 							}else if( !$.get2dAryElement( lines, y-1, x ) ){
-								sides.push( [ x+1, y, x, y ] );
+								ary = [ x+1, y, x, y ];
+								sides[ ary.join( '-' ) ] = ary;
 							}
 
 							// check left
 							if( !$.get2dAryElement( lines, y, x-1 ) ){
-								sides.push( [ x, y, x+1, y+1 ] );
+								ary = [ x, y, x+1, y+1 ];
+								sides[ ary.join( '-' ) ] = ary;
 
 							// check bottom
 							}else if( !$.get2dAryElement( lines, y+1, x ) ){
-								sides.push( [ x, y+1, x+1, y+1 ] );
+								ary = [ x, y+1, x+1, y+1 ];
+								sides[ ary.join( '-' ) ] = ary;
 							}
 							break;
 					}
@@ -220,21 +236,40 @@
 		}
 
 		, drawSides : function drawSides( sides, screen ){
-			var i, l, side, div, w, h, len;
+			var n, s, div, w, h, len, dx, dy, item;
 
-			for( i=0, l=sides.length; i<l; i++ ){
-				side = sides[i];
-				w    = Math.abs( side[0] - side[2] );
-				h    = Math.abs( side[1] - side[3] );
-				len  = 100 * Math.sqrt( w*w + h*h );
+			for( n in sides ){
+				s    = sides[n]; 
+				dx   = s[2] - s[0];
+				dy   = s[3] - s[1];
+				
+				// go backwards
+				while( sides[ item = [ s[0] - dx, s[1] - dy, s[0], s[1] ].join( '-' ) ] ){
+					s[0] -= dx;
+					s[1] -= dy;
+				
+					delete sides[ item ];
+				}
+				
+				// go forwards
+				while( sides[ item = [ s[2], s[3], s[2] + dx, s[3] + dy ].join( '-' ) ] ){
+					s[2] += dx;
+					s[3] += dy;
+				
+					delete sides[ item ];
+				}
+
+				w    = ( s[0] - s[2] ) / this.width  * this.screenW;
+				h    = ( s[1] - s[3] ) / this.height * this.screenH;
+				len  = Math.sqrt( w*w + h*h );
 
 				div  = document.createElement( 'DIV' );
 				div.className = 'wall';
 				div.style.cssText = 
-					  'width:' + ( len / this.width ) + '%; '
-					+ 'top: '  + ( side[1] / this.width * 180 ) + '%; '
-					+ 'left: ' + ( side[0] / this.height * 57 ) + '%; '
-					+ '-webkit-transform:rotateX( 90deg ) rotateY( ' + ( w === h ? ( side[0] + side[1] === side[2] + side[3] ? -45 : 45 ) : w > h ? 0 : 90 ) + 'deg );';
+					  'width:' + len + 'px; '
+					+ 'top: '  + ( s[1] / this.height * this.screenH ) + 'px; '
+					+ 'left: ' + ( s[0] / this.width * this.screenW ) + 'px; '
+					+ '-webkit-transform:rotateX( 90deg ) rotateY( ' + Math.atan2( -h, -w ) * 180 / Math.PI + 'deg );';
 
 				screen.appendChild( div );
 			}
